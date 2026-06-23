@@ -1,0 +1,19 @@
+{
+  "name": "재현 견적",
+  "short_name": "재현견적",
+  "description": "재현하늘창 창호 견적 전용 앱",
+  "lang": "ko",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f2f5f3",
+  "theme_color": "#123b33",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
