@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#123b33">
+  <meta name="description" content="재현하늘창 전용 창호 견적 앱">
+  <title>재현 견적</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css?v=2">
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">JH</span>
+      <div>
+        <strong>재현 견적</strong>
+        <span>창호 견적 전용</span>
+      </div>
+    </div>
+    <nav class="header-actions" aria-label="견적 작업">
+      <button type="button" class="ghost" id="newQuoteBtn">새 견적</button>
+      <button type="button" class="ghost" id="saveBtn">저장</button>
+      <button type="button" class="primary" id="printBtn">견적서 출력</button>
+    </nav>
+  </header>
+
+  <main class="app-shell">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">JAEHYUN WINDOW ESTIMATE</p>
+        <h1>현장에서 바로 만드는<br>빠르고 정확한 견적</h1>
+        <p>입력 내용은 이 기기에만 저장됩니다. 인터넷이 끊겨도 계속 사용할 수 있습니다.</p>
+      </div>
+      <div class="hero-total">
+        <span>최종 제안가</span>
+        <strong id="heroTotal">₩0</strong>
+        <small id="heroVatLabel">VAT 포함 · 만원 단위 절사</small>
+      </div>
+    </section>
+
+    <div class="tabs" role="tablist" aria-label="화면 선택">
+      <button class="tab active" type="button" data-tab="editor" role="tab">견적 작성</button>
+      <button class="tab" type="button" data-tab="preview" role="tab">견적서 미리보기</button>
+      <button class="tab" type="button" data-tab="saved" role="tab">저장 목록</button>
+      <button class="tab" type="button" data-tab="settings" role="tab">단가 설정</button>
+    </div>
+
+    <section id="editorTab" class="tab-panel active">
+      <div class="summary-grid">
+        <article class="summary-card">
+          <span>창호</span>
+          <strong id="windowTotal">₩0</strong>
+          <small id="windowCount">0개 항목</small>
+        </article>
+        <article class="summary-card">
+          <span>기타 비용</span>
+          <strong id="extraTotal">₩0</strong>
+          <small>철거·양중·마감</small>
+        </article>
+        <article class="summary-card">
+          <span>공급가액</span>
+          <strong id="supplyTotal">₩0</strong>
+          <small>절사 전</small>
+        </article>
+        <article class="summary-card accent">
+          <span>최종 제안가</span>
+          <strong id="finalTotal">₩0</strong>
+          <small id="vatSummary">VAT 포함</small>
+        </article>
+      </div>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <span class="step">01</span>
+            <h2>현장 정보</h2>
+          </div>
+          <span class="autosave">자동 저장됨</span>
+        </div>
+        <div class="form-grid">
+          <label><span>견적명</span><input id="quoteName" placeholder="예: 광주 초월읍 창호 교체"></label>
+          <label><span>현장명</span><input id="siteName" placeholder="아파트·주택·현장명"></label>
+          <label><span>고객명</span><input id="customerName" placeholder="고객명"></label>
+          <label><span>연락처</span><input id="customerPhone" inputmode="tel" placeholder="010-0000-0000"></label>
+          <label><span>견적일자</span><input id="quoteDate" type="date"></label>
+          <label><span>담당자</span><input id="manager" value="곽태일 대리 010-2036-9848"></label>
+          <label class="span-2"><span>현장 주소</span><input id="siteAddress" placeholder="현장 주소"></label>
+          <label class="span-2"><span>메모</span><textarea id="memo" rows="2" placeholder="고객 요청사항, 시공 조건 등"></textarea></label>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <span class="step">02</span>
+            <h2>창호 항목</h2>
+          </div>
+          <button type="button" class="secondary" id="addItemBtn">+ 창호 추가</button>
+        </div>
+        <div id="items" class="items"></div>
+        <button type="button" class="add-wide" id="addItemWideBtn">+ 창호 항목 추가</button>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <span class="step">03</span>
+            <h2>기타 비용</h2>
+          </div>
+          <button type="button" class="text-button" id="resetExtrasBtn">기본값 복원</button>
+        </div>
+        <div class="extras-grid">
+          <article class="extra-card">
+            <div class="extra-title"><strong>철거비</strong><span>틀 수 기준 자동</span></div>
+            <label><span>수량</span><input id="demolitionQty" type="number" min="0" step="1"></label>
+            <label><span>단가</span><input id="demolitionPrice" type="number" min="0" step="10000"></label>
+          </article>
+          <article class="extra-card">
+            <div class="extra-title"><strong>사다리 양중</strong><span>층수·시간 선택</span></div>
+            <label><span>선택</span><select id="ladderType"></select></label>
+            <label><span>수량</span><input id="ladderQty" type="number" min="0" step="1" value="0"></label>
+          </article>
+          <article class="extra-card">
+            <div class="extra-title"><strong>스카이 양중</strong><span>장비 선택</span></div>
+            <label><span>선택</span><select id="skyType"></select></label>
+            <label><span>수량</span><input id="skyQty" type="number" min="0" step="1" value="0"></label>
+          </article>
+          <article class="extra-card">
+            <div class="extra-title"><strong>시공 인건비</strong><span>1인 300,000원</span></div>
+            <label><span>인원</span><input id="laborQty" type="number" min="0" step="1" value="0"></label>
+            <label><span>단가</span><input id="laborPrice" type="number" min="0" step="10000" value="300000"></label>
+          </article>
+        </div>
+        <div id="fixedExtras" class="fixed-extras"></div>
+      </section>
+
+      <section class="panel totals-panel">
+        <div class="panel-heading">
+          <div>
+            <span class="step">04</span>
+            <h2>최종 금액</h2>
+          </div>
+        </div>
+        <div class="total-controls">
+          <label><span>추가 조정</span><div class="money-input"><span>₩</span><input id="adjustment" type="number" step="10000" value="0"></div></label>
+          <label><span>할인</span><div class="money-input"><span>₩</span><input id="discount" type="number" min="0" step="10000" value="0"></div></label>
+          <label><span>부가세</span><select id="vatMode"><option value="included">10% 포함</option><option value="excluded">별도</option></select></label>
+          <label><span>절사 단위</span><select id="roundUnit"><option value="10000">만원</option><option value="1000">천원</option><option value="1">절사 없음</option></select></label>
+        </div>
+        <div class="total-breakdown">
+          <div><span>창호 금액</span><strong id="breakWindow">₩0</strong></div>
+          <div><span>기타 비용</span><strong id="breakExtra">₩0</strong></div>
+          <div><span>조정 / 할인</span><strong id="breakAdjust">₩0</strong></div>
+          <div><span>VAT</span><strong id="breakVat">₩0</strong></div>
+          <div class="grand"><span>최종 제안가</span><strong id="breakFinal">₩0</strong></div>
+        </div>
+      </section>
+    </section>
+
+    <section id="previewTab" class="tab-panel">
+      <div class="preview-toolbar">
+        <p>인쇄 메뉴에서 “PDF로 저장”을 선택하면 파일로 보관할 수 있습니다.</p>
+        <button type="button" class="primary" id="previewPrintBtn">인쇄 / PDF</button>
+      </div>
+      <article id="quoteDocument" class="quote-document"></article>
+    </section>
+
+    <section id="savedTab" class="tab-panel">
+      <section class="panel folder-panel">
+        <div class="panel-heading">
+          <div><span class="step">PC</span><h2>내 컴퓨터 견적 폴더</h2></div>
+          <div class="inline-actions">
+            <button type="button" class="ghost" id="refreshFolderBtn">폴더 새로고침</button>
+            <button type="button" class="secondary" id="connectFolderBtn">저장 폴더 선택</button>
+          </div>
+        </div>
+        <div class="folder-status">
+          <div class="folder-icon" aria-hidden="true">▰</div>
+          <div>
+            <strong id="folderStatusTitle">저장 폴더가 연결되지 않았습니다.</strong>
+            <p id="folderStatusText">Chrome 또는 Edge에서 폴더를 한 번 선택하면 견적을 자동 저장하고 다시 불러올 수 있습니다.</p>
+          </div>
+          <button type="button" class="text-button" id="disconnectFolderBtn" hidden>연결 해제</button>
+        </div>
+        <p class="folder-help" id="folderSupportNote">
+          고객 정보는 GitHub에 저장되지 않습니다. 선택한 PC 폴더와 현재 브라우저에만 저장됩니다.
+        </p>
+      </section>
+      <section class="panel">
+        <div class="panel-heading">
+          <div><span class="step">●</span><h2>저장된 견적</h2></div>
+          <div class="inline-actions">
+            <button type="button" class="ghost" id="importBtn">가져오기</button>
+            <button type="button" class="secondary" id="exportBtn">현재 견적 내보내기</button>
+            <input type="file" id="importFile" accept=".json" hidden>
+          </div>
+        </div>
+        <div class="storage-filter">
+          <span id="savedCount">0개 견적</span>
+          <span id="storageMode">브라우저 저장소</span>
+        </div>
+        <div id="savedQuotes" class="saved-list"></div>
+      </section>
+    </section>
+
+    <section id="settingsTab" class="tab-panel">
+      <section class="panel">
+        <div class="panel-heading">
+          <div><span class="step">●</span><h2>제품 단가 설정</h2></div>
+          <button type="button" class="text-button" id="resetRatesBtn">원본 단가 복원</button>
+        </div>
+        <p class="setting-note">엑셀 기준단가를 기본값으로 적용했습니다. 변경한 값은 이 기기에 저장되고 다음 견적부터 사용됩니다.</p>
+        <div class="rate-table-wrap">
+          <table class="rate-table">
+            <thead><tr><th>품목</th><th>BF/m</th><th>SF/m</th><th>유리/자평</th><th>시공/자평</th><th>제조율</th><th>시공계수</th></tr></thead>
+            <tbody id="rateTable"></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <template id="itemTemplate">
+    <article class="item-card">
+      <div class="item-head">
+        <div><span class="item-number"></span><strong class="item-label">창호</strong></div>
+        <strong class="item-total">₩0</strong>
+        <button type="button" class="icon-button remove-item" aria-label="항목 삭제">×</button>
+      </div>
+      <div class="item-form">
+        <label><span>부위</span><input data-field="location" placeholder="예: 거실 전면"></label>
+        <label class="product-field"><span>품목</span><select data-field="product"></select></label>
+        <label><span>가로 W (mm)</span><input data-field="width" type="number" min="0" step="10" inputmode="numeric"></label>
+        <label><span>세로 H (mm)</span><input data-field="height" type="number" min="0" step="10" inputmode="numeric"></label>
+        <label><span>구조</span><select data-field="structure"><option value="0">2W</option><option value="2">3W</option><option value="4">4W</option></select></label>
+        <label><span>핸들</span><select data-field="handle"><option value="크리센트">크리센트</option><option value="오토락">오토락</option><option value="손잡이 없음">없음</option></select></label>
+        <label><span>수량</span><input data-field="qty" type="number" min="1" step="1" value="1"></label>
+      </div>
+      <div class="item-details">
+        <span class="item-size">치수를 입력하세요</span>
+        <span class="item-area">0 자평</span>
+        <button type="button" class="detail-toggle">계산 상세</button>
+      </div>
+      <div class="calculation-detail"></div>
+    </article>
+  </template>
+
+  <script src="./app.js?v=2"></script>
+</body>
+</html>
