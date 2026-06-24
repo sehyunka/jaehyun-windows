@@ -474,6 +474,7 @@ function updateTotalsOnly() {
   $("#vatSummary").textContent = vatText;
   $("#heroVatLabel").textContent = `${vatText} · ${number(state.totals.roundUnit) === 1 ? "절사 없음" : `${won(state.totals.roundUnit).replace("₩", "")}원 단위 절사`}`;
   renderDocument(result);
+  renderSharePanel();
   scheduleSave();
 }
 
@@ -633,7 +634,8 @@ function activateTab(name) {
   $$(".tab").forEach(button => button.classList.toggle("active", button.dataset.tab === name));
   $$(".tab-panel").forEach(panel => panel.classList.remove("active"));
   $(`#${name}Tab`).classList.add("active");
-  if (name === "preview") renderDocument();
+  if (name === "preview" || name === "share") renderDocument();
+  if (name === "share") renderSharePanel();
   if (name === "saved") renderSaved();
   window.scrollTo({ top: 250, behavior: "smooth" });
 }
@@ -660,6 +662,78 @@ function download(filename, content, type = "application/json") {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
+function quoteShareTitle() {
+  return state.info.quoteName || state.info.siteName || "재현하늘창 견적서";
+}
+
+function appShareUrl() {
+  return "https://sehyunka.github.io/jaehyun-windows/";
+}
+
+function quoteShareText(result = calculate()) {
+  const info = state.info;
+  const lines = [
+    `[재현하늘창 견적 안내]`,
+    `견적명: ${quoteShareTitle()}`,
+    info.customerName ? `고객명: ${info.customerName}` : "",
+    info.siteName ? `현장명: ${info.siteName}` : "",
+    info.quoteDate ? `견적일자: ${info.quoteDate}` : "",
+    `최종 제안가: ${won(result.final)} (${state.totals.vatMode === "included" ? "VAT 포함" : "VAT 별도"})`,
+    info.manager ? `담당자: ${info.manager}` : "",
+    `앱 링크: ${appShareUrl()}`,
+    "",
+    `※ PDF 견적서는 앱의 “PDF·출력·공유” 탭에서 PDF로 저장 후 첨부해 주세요.`
+  ];
+  return lines.filter(Boolean).join("\n");
+}
+
+function renderSharePanel() {
+  const summary = $("#shareSummaryText");
+  if (summary) summary.textContent = quoteShareText();
+  const shareButton = $("#nativeShareBtn");
+  if (shareButton && !navigator.share) shareButton.textContent = "공유 미지원 · 문구 복사";
+}
+
+async function copyShareText() {
+  const text = quoteShareText();
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+    } else {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.setAttribute("readonly", "");
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      textarea.remove();
+    }
+    toast("공유 문구를 복사했습니다. 카톡·문자에 붙여넣어 주세요.");
+  } catch {
+    toast("복사가 막혔습니다. 공유 요약 문구를 직접 선택해 복사해 주세요.");
+  }
+}
+
+async function shareQuote() {
+  const data = { title: quoteShareTitle(), text: quoteShareText(), url: appShareUrl() };
+  if (navigator.share) {
+    try {
+      await navigator.share(data);
+      return;
+    } catch (error) {
+      if (error?.name === "AbortError") return;
+    }
+  }
+  await copyShareText();
+}
+
+function openSmsShare() {
+  const body = encodeURIComponent(quoteShareText());
+  window.location.href = `sms:?&body=${body}`;
+}
+
 function boot() {
   $$(".tab").forEach(button => button.onclick = () => activateTab(button.dataset.tab));
   $("#addItemBtn").onclick = $("#addItemWideBtn").onclick = () => { state.items.push(newItem()); renderItems(); update(); };
@@ -674,6 +748,12 @@ function boot() {
   $("#disconnectFolderBtn").onclick = () => disconnectQuoteFolder();
   $("#printBtn").onclick = () => { activateTab("preview"); setTimeout(() => window.print(), 250); };
   $("#previewPrintBtn").onclick = () => window.print();
+  $("#previewShareBtn").onclick = () => activateTab("share");
+  $("#sharePrintBtn").onclick = $("#pdfBtn").onclick = () => { renderDocument(); setTimeout(() => window.print(), 150); };
+  $("#nativeShareBtn").onclick = () => shareQuote();
+  $("#copyShareTextBtn").onclick = () => copyShareText();
+  $("#smsShareBtn").onclick = () => openSmsShare();
+  $("#openPreviewFromShareBtn").onclick = () => activateTab("preview");
   $("#newQuoteBtn").onclick = () => {
     if (!confirm("현재 작성 중인 내용을 비우고 새 견적을 시작할까요?")) return;
     state = initialState(); hydrate(); toast("새 견적을 시작했습니다.");
