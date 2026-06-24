@@ -680,7 +680,6 @@ function quoteShareText(result = calculate()) {
     info.quoteDate ? `견적일자: ${info.quoteDate}` : "",
     `최종 제안가: ${won(result.final)} (${state.totals.vatMode === "included" ? "VAT 포함" : "VAT 별도"})`,
     info.manager ? `담당자: ${info.manager}` : "",
-    `앱 링크: ${appShareUrl()}`,
     "",
     `※ PDF 견적서는 앱의 “PDF·출력·공유” 탭에서 PDF로 저장 후 첨부해 주세요.`
   ];
@@ -717,7 +716,7 @@ async function copyShareText() {
 }
 
 async function shareQuote() {
-  const data = { title: quoteShareTitle(), text: quoteShareText(), url: appShareUrl() };
+  const data = { title: quoteShareTitle(), text: quoteShareText() };
   if (navigator.share) {
     try {
       await navigator.share(data);
