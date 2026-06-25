@@ -7,9 +7,9 @@
   <meta name="description" content="재현하늘창 전용 창호 견적 앱">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="재현견적">
+  <meta name="apple-mobile-web-app-title" content="재현완성창">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>재현 견적</title>
+  <title>재현완성창</title>
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <style>
@@ -23,14 +23,14 @@
   <script>
     window.JH_IS_APP_MODE = window.matchMedia?.("(display-mode: standalone)")?.matches || window.navigator.standalone === true;
   </script>
-  <link rel="stylesheet" href="./styles.css?v=8">
+  <link rel="stylesheet" href="./styles.css?v=9">
 </head>
 <body>
   <header class="app-header">
     <div class="brand">
       <span class="brand-mark" aria-hidden="true">JH</span>
       <div>
-        <strong>재현 견적</strong>
+        <strong>재현완성창</strong>
         <span>창호 견적 전용</span>
       </div>
     </div>
@@ -297,7 +297,7 @@
     <section class="install-modal" role="dialog" aria-modal="true" aria-labelledby="installTitle">
       <button type="button" class="modal-close" id="installCloseBtn" aria-label="설치 안내 닫기">×</button>
       <span class="step">APP</span>
-      <h2 id="installTitle">재현견적앱 설치 안내</h2>
+      <h2 id="installTitle">재현완성창 설치 안내</h2>
       <p id="installMessage">이 기기에서 앱처럼 설치해 홈 화면에서 바로 실행할 수 있습니다.</p>
       <div class="install-steps">
         <article>
@@ -310,7 +310,7 @@
         </article>
         <article>
           <strong>설치 후 사용</strong>
-          <p>홈 화면의 <b>재현견적</b> 아이콘을 누르면 브라우저 주소창 없이 앱처럼 실행됩니다.</p>
+          <p>홈 화면의 <b>재현완성창</b> 아이콘을 누르면 브라우저 주소창 없이 앱처럼 실행됩니다.</p>
         </article>
       </div>
       <div class="inline-actions install-modal-actions">
@@ -364,6 +364,6 @@
       window.JH_FORCE_CLOSE_INSTALL = forceCloseInstall;
     })();
   </script>
-  <script src="./app.js?v=7"></script>
+  <script src="./app.js?v=9"></script>
 </body>
 </html>
