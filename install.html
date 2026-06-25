@@ -113,6 +113,10 @@
     </section>
   </div>
   <script>
+    const isStandaloneInstall = () => window.matchMedia?.("(display-mode: standalone)")?.matches || window.navigator.standalone === true;
+    if (isStandaloneInstall()) {
+      location.replace("./index.html?from=installed");
+    }
     let deferredPrompt = null;
     const status = document.querySelector("#status");
     const helpModal = document.querySelector("#installHelpModal");
