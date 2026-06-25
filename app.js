@@ -735,7 +735,7 @@ function openSmsShare() {
 }
 
 function isStandaloneMode() {
-  return window.matchMedia?.("(display-mode: standalone)")?.matches || window.navigator.standalone === true;
+  return window.JH_IS_APP_MODE === true || window.matchMedia?.("(display-mode: standalone)")?.matches || window.navigator.standalone === true;
 }
 
 function isAppleMobile() {
@@ -756,7 +756,10 @@ function showInstallGuide(message) {
 
 function hideInstallGuide() {
   const modal = $("#installModal");
-  if (modal) modal.hidden = true;
+  if (modal) {
+    modal.hidden = true;
+    if (isStandaloneMode()) modal.style.display = "none";
+  }
 }
 
 async function runInstallPrompt() {
@@ -782,6 +785,7 @@ async function runInstallPrompt() {
 function boot() {
   if (isStandaloneMode()) {
     hideInstallGuide();
+    window.JH_FORCE_CLOSE_INSTALL?.();
     const installButton = $("#installAppBtn");
     if (installButton) installButton.hidden = true;
   }
@@ -795,10 +799,10 @@ function boot() {
     hideInstallGuide();
   });
   $$(".tab").forEach(button => button.onclick = () => activateTab(button.dataset.tab));
-  $("#installAppBtn").onclick = () => runInstallPrompt();
-  $("#installPromptBtn").onclick = () => runInstallPrompt();
-  $("#installCloseBtn").onclick = () => hideInstallGuide();
-  $("#installModal").onclick = event => { if (event.target.id === "installModal") hideInstallGuide(); };
+  if ($("#installAppBtn")) $("#installAppBtn").onclick = () => runInstallPrompt();
+  if ($("#installPromptBtn")) $("#installPromptBtn").onclick = () => runInstallPrompt();
+  if ($("#installCloseBtn")) $("#installCloseBtn").onclick = () => hideInstallGuide();
+  if ($("#installModal")) $("#installModal").onclick = event => { if (event.target.id === "installModal") hideInstallGuide(); };
   $("#addItemBtn").onclick = $("#addItemWideBtn").onclick = () => { state.items.push(newItem()); renderItems(); update(); };
   $("#saveBtn").onclick = () => saveQuote();
   $("#connectFolderBtn").onclick = () => reconnectQuoteFolder();
