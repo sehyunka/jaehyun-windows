@@ -68,6 +68,7 @@ let folderSaveTimer;
 let quoteDirectory = null;
 let folderQuotes = [];
 let folderPermission = "none";
+let deferredInstallPrompt = null;
 const DIRECTORY_DB = "jh-estimate-storage";
 const DIRECTORY_STORE = "handles";
 
@@ -733,8 +734,61 @@ function openSmsShare() {
   window.location.href = `sms:?&body=${body}`;
 }
 
+function isStandaloneMode() {
+  return window.matchMedia?.("(display-mode: standalone)")?.matches || window.navigator.standalone === true;
+}
+
+function isAppleMobile() {
+  return /iphone|ipad|ipod/i.test(navigator.userAgent);
+}
+
+function showInstallGuide(message) {
+  const modal = $("#installModal");
+  const messageBox = $("#installMessage");
+  if (messageBox && message) messageBox.textContent = message;
+  if (modal) modal.hidden = false;
+}
+
+function hideInstallGuide() {
+  const modal = $("#installModal");
+  if (modal) modal.hidden = true;
+}
+
+async function runInstallPrompt() {
+  if (isStandaloneMode()) {
+    toast("이미 앱처럼 설치되어 실행 중입니다.");
+    return;
+  }
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    const choice = await deferredInstallPrompt.userChoice.catch(() => null);
+    deferredInstallPrompt = null;
+    if (choice?.outcome === "accepted") toast("홈 화면에 재현견적앱 설치를 시작했습니다.");
+    else showInstallGuide("설치창을 닫았습니다. 필요하면 아래 안내대로 홈 화면에 추가해 주세요.");
+    return;
+  }
+  if (isAppleMobile()) {
+    showInstallGuide("iPhone/iPad는 Safari의 공유 버튼에서 ‘홈 화면에 추가’를 선택해 설치합니다.");
+  } else {
+    showInstallGuide("이 브라우저는 자동 설치창을 바로 띄우지 못했습니다. 주소창 또는 메뉴의 ‘앱 설치/홈 화면에 추가’를 이용해 주세요.");
+  }
+}
+
 function boot() {
+  window.addEventListener("beforeinstallprompt", event => {
+    event.preventDefault();
+    deferredInstallPrompt = event;
+  });
+  window.addEventListener("appinstalled", () => {
+    deferredInstallPrompt = null;
+    toast("재현견적앱이 설치되었습니다.");
+    hideInstallGuide();
+  });
   $$(".tab").forEach(button => button.onclick = () => activateTab(button.dataset.tab));
+  $("#installAppBtn").onclick = () => runInstallPrompt();
+  $("#installPromptBtn").onclick = () => runInstallPrompt();
+  $("#installCloseBtn").onclick = () => hideInstallGuide();
+  $("#installModal").onclick = event => { if (event.target.id === "installModal") hideInstallGuide(); };
   $("#addItemBtn").onclick = $("#addItemWideBtn").onclick = () => { state.items.push(newItem()); renderItems(); update(); };
   $("#saveBtn").onclick = () => saveQuote();
   $("#connectFolderBtn").onclick = () => reconnectQuoteFolder();
