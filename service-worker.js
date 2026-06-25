@@ -1,4 +1,4 @@
-const CACHE = "jh-estimate-v5";
+const CACHE = "jh-estimate-v6";
 const ASSETS = [
   "./",
   "./index.html",
