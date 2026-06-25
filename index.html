@@ -12,7 +12,18 @@
   <title>재현 견적</title>
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./styles.css?v=6">
+  <style>
+    @media (display-mode: standalone) {
+      #installModal,
+      .install-action {
+        display: none !important;
+      }
+    }
+  </style>
+  <script>
+    window.JH_IS_APP_MODE = window.matchMedia?.("(display-mode: standalone)")?.matches || window.navigator.standalone === true;
+  </script>
+  <link rel="stylesheet" href="./styles.css?v=7">
 </head>
 <body>
   <header class="app-header">
@@ -334,6 +345,25 @@
     </article>
   </template>
 
-  <script src="./app.js?v=6"></script>
+  <script>
+    (function () {
+      const isAppMode = () => window.JH_IS_APP_MODE || window.matchMedia?.("(display-mode: standalone)")?.matches || window.navigator.standalone === true;
+      const forceCloseInstall = () => {
+        const modal = document.querySelector("#installModal");
+        if (modal && isAppMode()) {
+          modal.hidden = true;
+          modal.style.display = "none";
+          modal.remove();
+        }
+        const installButton = document.querySelector("#installAppBtn");
+        if (installButton && isAppMode()) installButton.hidden = true;
+      };
+      document.addEventListener("DOMContentLoaded", forceCloseInstall);
+      window.addEventListener("pageshow", forceCloseInstall);
+      window.addEventListener("focus", forceCloseInstall);
+      window.JH_FORCE_CLOSE_INSTALL = forceCloseInstall;
+    })();
+  </script>
+  <script src="./app.js?v=7"></script>
 </body>
 </html>
