@@ -1,10 +1,10 @@
-const CACHE = "jh-estimate-v6";
+const CACHE = "jh-estimate-v7";
 const ASSETS = [
   "./",
   "./index.html",
   "./install.html",
-  "./styles.css?v=5",
-  "./app.js?v=5",
+  "./styles.css?v=6",
+  "./app.js?v=6",
   "./manifest.webmanifest",
   "./icon.svg"
 ];
