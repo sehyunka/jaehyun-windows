@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#123b33">
+  <meta name="description" content="재현견적앱 모바일·태블릿 설치 페이지">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="재현견적">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>재현견적앱 설치</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <style>
+    :root { --green:#123b33; --lime:#cce95d; --soft:#edf4f0; --line:#dfe5e2; --muted:#68736f; --ink:#17211e; font-family: "Noto Sans KR","Malgun Gothic",system-ui,sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin:0; min-width:320px; color:var(--ink); background:#f2f5f3; }
+    .wrap { min-height:100vh; display:grid; place-items:center; padding:22px; }
+    .card { width:min(860px,100%); overflow:hidden; border-radius:28px; background:white; box-shadow:0 20px 70px rgba(23,45,38,.14); }
+    .hero { padding:38px clamp(22px,5vw,54px); color:white; background:linear-gradient(135deg,#123b33,#0a2822); }
+    .brand { display:flex; align-items:center; gap:12px; margin-bottom:28px; }
+    .mark { width:48px; height:48px; display:grid; place-items:center; border-radius:15px; color:var(--green); background:var(--lime); font-weight:900; }
+    h1 { margin:0; font-size:clamp(34px,7vw,58px); line-height:1.05; letter-spacing:-.06em; }
+    .hero p { margin:16px 0 0; color:rgba(255,255,255,.68); line-height:1.7; }
+    .content { padding:28px clamp(20px,5vw,44px) 38px; }
+    .actions { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:22px; }
+    button, a.button { border:0; border-radius:14px; padding:14px 18px; font-weight:850; font-size:16px; text-decoration:none; cursor:pointer; }
+    .primary { color:#17332c; background:var(--lime); }
+    .secondary { color:white; background:var(--green); }
+    .ghost { color:var(--green); background:white; border:1px solid var(--line); }
+    .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+    article { padding:18px; border:1px solid var(--line); border-radius:18px; background:#fbfcfb; }
+    article span { width:34px; height:34px; display:grid; place-items:center; border-radius:999px; color:var(--green); background:var(--lime); font-weight:900; }
+    h2 { margin:12px 0 8px; font-size:18px; }
+    article p, .note { margin:0; color:var(--muted); line-height:1.65; font-size:14px; }
+    .note { margin-top:18px; padding:14px 16px; border:1px dashed #abc4ba; border-radius:16px; background:var(--soft); }
+    @media (max-width:720px) {
+      .grid { grid-template-columns:1fr; }
+      .actions { flex-direction:column; }
+      button, a.button { width:100%; text-align:center; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card">
+      <div class="hero">
+        <div class="brand"><span class="mark">JH</span><strong>재현견적앱</strong></div>
+        <h1>모바일·태블릿에<br>앱처럼 설치하기</h1>
+        <p>Google Play 없이 링크만으로 설치해 홈 화면에서 바로 실행할 수 있습니다.</p>
+      </div>
+      <div class="content">
+        <div class="actions">
+          <button type="button" class="primary" id="installBtn">앱 설치하기</button>
+          <a class="button secondary" href="./index.html">앱 바로 열기</a>
+          <button type="button" class="ghost" id="copyBtn">설치 링크 복사</button>
+        </div>
+        <div class="grid">
+          <article>
+            <span>1</span>
+            <h2>Android / Chrome</h2>
+            <p><b>앱 설치하기</b>를 누르고 설치창에서 <b>설치</b>를 선택하세요. 설치창이 안 뜨면 브라우저 메뉴의 <b>앱 설치</b> 또는 <b>홈 화면에 추가</b>를 선택하세요.</p>
+          </article>
+          <article>
+            <span>2</span>
+            <h2>iPhone / iPad</h2>
+            <p>Safari에서 이 페이지를 열고 <b>공유</b> 버튼을 누른 뒤 <b>홈 화면에 추가</b> → <b>추가</b>를 선택하세요.</p>
+          </article>
+          <article>
+            <span>3</span>
+            <h2>설치 후 사용</h2>
+            <p>홈 화면의 <b>재현견적</b> 아이콘을 누르면 주소창 없이 앱처럼 열립니다. 견적 데이터는 선택한 PC 폴더 또는 현재 브라우저에 저장됩니다.</p>
+          </article>
+        </div>
+        <p class="note" id="status">소수 사용자에게는 이 설치 페이지 링크를 문자·카톡으로 보내면 됩니다.</p>
+      </div>
+    </section>
+  </main>
+  <script>
+    let deferredPrompt = null;
+    const status = document.querySelector("#status");
+    window.addEventListener("beforeinstallprompt", event => {
+      event.preventDefault();
+      deferredPrompt = event;
+      status.textContent = "설치 준비가 완료됐습니다. ‘앱 설치하기’를 눌러 주세요.";
+    });
+    window.addEventListener("appinstalled", () => {
+      deferredPrompt = null;
+      status.textContent = "재현견적앱 설치가 완료되었습니다.";
+    });
+    document.querySelector("#installBtn").addEventListener("click", async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const choice = await deferredPrompt.userChoice.catch(() => null);
+        deferredPrompt = null;
+        status.textContent = choice?.outcome === "accepted" ? "설치를 시작했습니다." : "설치를 취소했습니다. 필요하면 다시 시도해 주세요.";
+      } else if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
+        status.textContent = "iPhone/iPad는 Safari 공유 버튼 → 홈 화면에 추가로 설치해 주세요.";
+      } else {
+        status.textContent = "설치창이 자동으로 뜨지 않으면 브라우저 메뉴의 ‘앱 설치’ 또는 ‘홈 화면에 추가’를 선택해 주세요.";
+      }
+    });
+    document.querySelector("#copyBtn").addEventListener("click", async () => {
+      const url = "https://sehyunka.github.io/jaehyun-windows/install.html";
+      try {
+        await navigator.clipboard.writeText(url);
+        status.textContent = "설치 링크를 복사했습니다. 문자나 카톡에 붙여넣어 보내세요.";
+      } catch {
+        status.textContent = url;
+      }
+    });
+    if ("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("./service-worker.js").catch(() => {});
+  </script>
+</body>
+</html>
