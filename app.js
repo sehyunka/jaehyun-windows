@@ -159,7 +159,7 @@ function ensureStorageFile(quote) {
   if (!quote.storageFile) {
     const date = safeFilePart(quote.info?.quoteDate || today());
     const site = safeFilePart(quote.info?.siteName || quote.info?.quoteName || "견적");
-    quote.storageFile = `재현견적_${date}_${site}_${quote.id.slice(-6)}.json`;
+    quote.storageFile = `재현완성창_${date}_${site}_${quote.id.slice(-6)}.json`;
   }
   return quote.storageFile;
 }
@@ -167,7 +167,7 @@ function ensureStorageFile(quote) {
 async function writeQuoteToFolder(quote, silent = false) {
   if (!quoteDirectory || folderPermission !== "granted") return false;
   const snapshot = structuredClone(quote);
-  snapshot.app = "재현견적";
+  snapshot.app = "재현완성창";
   snapshot.schemaVersion = 2;
   snapshot.snapshotTotal = quote.id === state.id ? calculate().final : number(snapshot.snapshotTotal);
   snapshot.updatedAt = new Date().toISOString();
@@ -200,7 +200,7 @@ async function readQuotesFromFolder() {
   if (!quoteDirectory || folderPermission !== "granted") return [];
   const quotes = [];
   for await (const entry of quoteDirectory.values()) {
-    if (entry.kind !== "file" || !entry.name.startsWith("재현견적_") || !entry.name.endsWith(".json")) continue;
+    if (entry.kind !== "file" || (!entry.name.startsWith("재현완성창_") && !entry.name.startsWith("재현견적_")) || !entry.name.endsWith(".json")) continue;
     try {
       const file = await entry.getFile();
       const quote = JSON.parse(await file.text());
@@ -771,7 +771,7 @@ async function runInstallPrompt() {
     deferredInstallPrompt.prompt();
     const choice = await deferredInstallPrompt.userChoice.catch(() => null);
     deferredInstallPrompt = null;
-    if (choice?.outcome === "accepted") toast("홈 화면에 재현견적앱 설치를 시작했습니다.");
+    if (choice?.outcome === "accepted") toast("홈 화면에 재현완성창 설치를 시작했습니다.");
     else showInstallGuide("설치창을 닫았습니다. 필요하면 아래 안내대로 홈 화면에 추가해 주세요.");
     return;
   }
@@ -795,7 +795,7 @@ function boot() {
   });
   window.addEventListener("appinstalled", () => {
     deferredInstallPrompt = null;
-    toast("재현견적앱이 설치되었습니다.");
+    toast("재현완성창이 설치되었습니다.");
     hideInstallGuide();
   });
   $$(".tab").forEach(button => button.onclick = () => activateTab(button.dataset.tab));
@@ -835,7 +835,7 @@ function boot() {
     localStorage.setItem("jh-rates", JSON.stringify(products));
     renderRates(); renderItems(); update(); toast("원본 단가를 복원했습니다.");
   };
-  $("#exportBtn").onclick = () => download(`재현견적_${state.info.siteName || today()}.json`, JSON.stringify(state, null, 2));
+  $("#exportBtn").onclick = () => download(`재현완성창_${state.info.siteName || today()}.json`, JSON.stringify(state, null, 2));
   $("#importBtn").onclick = () => $("#importFile").click();
   $("#importFile").onchange = event => {
     const file = event.target.files[0];
