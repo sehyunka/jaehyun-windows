@@ -43,6 +43,7 @@ button.secondary { background: var(--green); color: white; }
 button.ghost { color: inherit; background: rgba(255,255,255,.09); border: 1px solid rgba(255,255,255,.12); }
 .panel button.ghost, .preview-toolbar button.ghost { color: var(--green); background: white; border-color: var(--line); }
 .text-button { padding: 6px; color: var(--green-2); background: transparent; }
+.link-button { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
 .icon-button { width: 36px; height: 36px; padding: 0; border-radius: 50%; color: var(--muted); background: transparent; font-size: 22px; }
 .icon-button:hover { color: var(--danger); background: #fff0f0; }
 
@@ -213,6 +214,28 @@ input:focus, select:focus, textarea:focus { border-color: var(--green-2); box-sh
 }
 .toast.show { opacity: 1; transform: translateY(0); }
 
+.modal-backdrop {
+  position: fixed; inset: 0; z-index: 200;
+  display: grid; place-items: center; padding: 18px;
+  background: rgba(11, 25, 21, .54); backdrop-filter: blur(5px);
+}
+.install-modal {
+  position: relative; width: min(720px, 100%); max-height: min(760px, 92vh); overflow: auto;
+  padding: 26px; border-radius: 22px; background: white; box-shadow: 0 25px 80px rgba(0,0,0,.22);
+}
+.modal-close {
+  position: absolute; right: 16px; top: 14px;
+  width: 38px; height: 38px; padding: 0; border-radius: 999px;
+  color: var(--green); background: var(--soft); font-size: 24px; line-height: 1;
+}
+.install-modal h2 { margin: 14px 0 8px; font-size: 26px; letter-spacing: -.04em; }
+.install-modal > p { margin: 0 0 18px; color: var(--muted); line-height: 1.6; }
+.install-steps { display: grid; gap: 10px; margin: 18px 0; }
+.install-steps article { padding: 15px; border: 1px solid var(--line); border-radius: 15px; background: #fbfcfb; }
+.install-steps strong { display: block; margin-bottom: 5px; color: var(--green); }
+.install-steps p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
+.install-modal-actions { justify-content: flex-end; }
+
 @media (max-width: 1100px) {
   .summary-grid, .extras-grid { grid-template-columns: repeat(2, 1fr); }
   .form-grid { grid-template-columns: repeat(2, 1fr); }
@@ -226,6 +249,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--green-2); box-sh
   .app-header { min-height: 64px; padding: 10px 14px; }
   .brand span { display: none; }
   .header-actions .ghost { display: none; }
+  .header-actions .install-action { display: inline-flex; }
   .header-actions button { padding: 10px 12px; }
   .hero { padding: 34px 18px 54px; display: block; }
   .hero h1 { font-size: 34px; }
@@ -255,6 +279,9 @@ input:focus, select:focus, textarea:focus { border-color: var(--green-2); box-sh
   .folder-status > button { grid-column: 1 / -1; justify-self: start; }
   .saved-card-actions { justify-content: stretch; }
   .saved-card-actions button { flex: 1; }
+  .install-modal { padding: 22px 16px; }
+  .install-modal-actions { align-items: stretch; flex-direction: column; }
+  .install-modal-actions > * { width: 100%; }
 }
 
 @media print {
