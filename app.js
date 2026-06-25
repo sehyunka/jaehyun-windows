@@ -743,6 +743,11 @@ function isAppleMobile() {
 }
 
 function showInstallGuide(message) {
+  if (isStandaloneMode()) {
+    hideInstallGuide();
+    toast("이미 앱처럼 설치되어 실행 중입니다.");
+    return;
+  }
   const modal = $("#installModal");
   const messageBox = $("#installMessage");
   if (messageBox && message) messageBox.textContent = message;
@@ -775,6 +780,11 @@ async function runInstallPrompt() {
 }
 
 function boot() {
+  if (isStandaloneMode()) {
+    hideInstallGuide();
+    const installButton = $("#installAppBtn");
+    if (installButton) installButton.hidden = true;
+  }
   window.addEventListener("beforeinstallprompt", event => {
     event.preventDefault();
     deferredInstallPrompt = event;
