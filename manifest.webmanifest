@@ -3,6 +3,7 @@
   "short_name": "재현견적",
   "description": "재현하늘창 창호 견적 전용 앱",
   "lang": "ko",
+  "id": "./index.html",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
