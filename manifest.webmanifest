@@ -4,7 +4,7 @@
   "description": "재현하늘창 창호 견적 전용 앱",
   "lang": "ko",
   "id": "/jaehyun-windows/",
-  "start_url": "./index.html?from=pwa",
+  "start_url": "./index.html?from=pwa&v=8",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f2f5f3",
