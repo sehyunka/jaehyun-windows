@@ -35,6 +35,16 @@
     h2 { margin:12px 0 8px; font-size:18px; }
     article p, .note { margin:0; color:var(--muted); line-height:1.65; font-size:14px; }
     .note { margin-top:18px; padding:14px 16px; border:1px dashed #abc4ba; border-radius:16px; background:var(--soft); }
+    .install-help { margin-top:14px; padding:18px; border-radius:18px; background:#fffbea; border:1px solid #e4d78f; }
+    .install-help strong { display:block; margin-bottom:8px; color:var(--green); }
+    .install-help ol { margin:8px 0 0; padding-left:22px; color:var(--ink); line-height:1.75; }
+    .modal-backdrop { position:fixed; inset:0; z-index:20; display:grid; place-items:center; padding:18px; background:rgba(11,25,21,.58); }
+    .modal-backdrop[hidden] { display:none; }
+    .modal { width:min(560px,100%); padding:24px; border-radius:22px; background:white; box-shadow:0 24px 70px rgba(0,0,0,.26); }
+    .modal h2 { margin:0 0 10px; font-size:24px; color:var(--green); }
+    .modal p { margin:0 0 12px; color:var(--muted); line-height:1.65; }
+    .modal ol { margin:0 0 18px; padding-left:22px; line-height:1.8; }
+    .modal .actions { margin:0; }
     @media (max-width:720px) {
       .grid { grid-template-columns:1fr; }
       .actions { flex-direction:column; }
@@ -74,12 +84,44 @@
           </article>
         </div>
         <p class="note" id="status">소수 사용자에게는 이 설치 페이지 링크를 문자·카톡으로 보내면 됩니다.</p>
+        <div class="install-help">
+          <strong>버튼을 눌러도 설치창이 안 뜰 때</strong>
+          <ol>
+            <li>Android Chrome에서 이 페이지를 다시 엽니다.</li>
+            <li>오른쪽 위 <b>점 3개 메뉴</b>를 누릅니다.</li>
+            <li><b>앱 설치</b> 또는 <b>홈 화면에 추가</b>를 선택합니다.</li>
+            <li>홈 화면에 생긴 <b>재현견적</b> 아이콘으로 실행합니다.</li>
+          </ol>
+        </div>
       </div>
     </section>
   </main>
+  <div class="modal-backdrop" id="installHelpModal" hidden>
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="installHelpTitle">
+      <h2 id="installHelpTitle">Android 설치 방법</h2>
+      <p id="installHelpText">설치창이 자동으로 뜨지 않으면 아래 순서대로 설치해 주세요.</p>
+      <ol>
+        <li>Chrome 오른쪽 위 <b>점 3개 메뉴</b>를 누르세요.</li>
+        <li><b>앱 설치</b> 또는 <b>홈 화면에 추가</b>를 선택하세요.</li>
+        <li>확인창에서 <b>설치</b> 또는 <b>추가</b>를 누르세요.</li>
+        <li>홈 화면의 <b>재현견적</b> 아이콘으로 실행하세요.</li>
+      </ol>
+      <div class="actions">
+        <button type="button" class="secondary" id="openAppBtn">앱 바로 열기</button>
+        <button type="button" class="ghost" id="closeHelpBtn">확인</button>
+      </div>
+    </section>
+  </div>
   <script>
     let deferredPrompt = null;
     const status = document.querySelector("#status");
+    const helpModal = document.querySelector("#installHelpModal");
+    const helpText = document.querySelector("#installHelpText");
+    const showHelp = message => {
+      helpText.textContent = message || "설치창이 자동으로 뜨지 않으면 아래 순서대로 설치해 주세요.";
+      helpModal.hidden = false;
+    };
+    const hideHelp = () => { helpModal.hidden = true; };
     window.addEventListener("beforeinstallprompt", event => {
       event.preventDefault();
       deferredPrompt = event;
@@ -90,15 +132,23 @@
       status.textContent = "재현견적앱 설치가 완료되었습니다.";
     });
     document.querySelector("#installBtn").addEventListener("click", async () => {
+      status.textContent = "설치를 확인하는 중입니다. 잠시만 기다려 주세요.";
       if (deferredPrompt) {
         deferredPrompt.prompt();
         const choice = await deferredPrompt.userChoice.catch(() => null);
         deferredPrompt = null;
-        status.textContent = choice?.outcome === "accepted" ? "설치를 시작했습니다." : "설치를 취소했습니다. 필요하면 다시 시도해 주세요.";
+        if (choice?.outcome === "accepted") {
+          status.textContent = "설치를 시작했습니다.";
+        } else {
+          status.textContent = "설치창을 닫았습니다. Chrome 메뉴에서도 설치할 수 있습니다.";
+          showHelp("설치창을 닫았거나 표시되지 않았습니다. Chrome 메뉴에서 직접 설치해 주세요.");
+        }
       } else if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
         status.textContent = "iPhone/iPad는 Safari 공유 버튼 → 홈 화면에 추가로 설치해 주세요.";
+        showHelp("iPhone/iPad는 Safari 하단 공유 버튼에서 ‘홈 화면에 추가’를 선택해 주세요.");
       } else {
         status.textContent = "설치창이 자동으로 뜨지 않으면 브라우저 메뉴의 ‘앱 설치’ 또는 ‘홈 화면에 추가’를 선택해 주세요.";
+        showHelp("설치창이 자동으로 뜨지 않았습니다. Android Chrome 메뉴에서 직접 설치해 주세요.");
       }
     });
     document.querySelector("#copyBtn").addEventListener("click", async () => {
@@ -110,6 +160,9 @@
         status.textContent = url;
       }
     });
+    document.querySelector("#closeHelpBtn").addEventListener("click", hideHelp);
+    document.querySelector("#openAppBtn").addEventListener("click", () => { location.href = "./index.html"; });
+    helpModal.addEventListener("click", event => { if (event.target === helpModal) hideHelp(); });
     if ("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("./service-worker.js").catch(() => {});
   </script>
 </body>
