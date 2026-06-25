@@ -5,10 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#123b33">
   <meta name="description" content="재현하늘창 전용 창호 견적 앱">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="재현견적">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>재현 견적</title>
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./styles.css?v=4">
+  <link rel="stylesheet" href="./styles.css?v=5">
 </head>
 <body>
   <header class="app-header">
@@ -20,6 +24,7 @@
       </div>
     </div>
     <nav class="header-actions" aria-label="견적 작업">
+      <button type="button" class="ghost install-action" id="installAppBtn">앱 설치</button>
       <button type="button" class="ghost" id="newQuoteBtn">새 견적</button>
       <button type="button" class="ghost" id="saveBtn">저장</button>
       <button type="button" class="primary" id="printBtn">견적서 출력</button>
@@ -277,6 +282,33 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
+  <div id="installModal" class="modal-backdrop" hidden>
+    <section class="install-modal" role="dialog" aria-modal="true" aria-labelledby="installTitle">
+      <button type="button" class="modal-close" id="installCloseBtn" aria-label="설치 안내 닫기">×</button>
+      <span class="step">APP</span>
+      <h2 id="installTitle">재현견적앱 설치 안내</h2>
+      <p id="installMessage">이 기기에서 앱처럼 설치해 홈 화면에서 바로 실행할 수 있습니다.</p>
+      <div class="install-steps">
+        <article>
+          <strong>Android / Chrome / Edge</strong>
+          <p>상단의 <b>앱 설치</b> 버튼을 누른 뒤 브라우저 설치창에서 <b>설치</b>를 선택하세요.</p>
+        </article>
+        <article>
+          <strong>iPhone / iPad Safari</strong>
+          <p>Safari 하단 <b>공유</b> 버튼 → <b>홈 화면에 추가</b> → <b>추가</b>를 누르세요.</p>
+        </article>
+        <article>
+          <strong>설치 후 사용</strong>
+          <p>홈 화면의 <b>재현견적</b> 아이콘을 누르면 브라우저 주소창 없이 앱처럼 실행됩니다.</p>
+        </article>
+      </div>
+      <div class="inline-actions install-modal-actions">
+        <button type="button" class="primary" id="installPromptBtn">설치 실행</button>
+        <a class="secondary link-button" href="./install.html">설치 전용 페이지 열기</a>
+      </div>
+    </section>
+  </div>
+
   <template id="itemTemplate">
     <article class="item-card">
       <div class="item-head">
@@ -302,6 +334,6 @@
     </article>
   </template>
 
-  <script src="./app.js?v=4"></script>
+  <script src="./app.js?v=5"></script>
 </body>
 </html>
